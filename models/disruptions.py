@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from models.base import ResponseModel
+from models.base import ResponseModel, QueryParams
 
 
 class DisruptionType(Enum):
@@ -31,3 +31,7 @@ class DisruptionResponseModel(ResponseModel):
 
     def get_disruption_by_type(self, type: DisruptionType) -> List[Disruption]:
         return [d for d in self.disruptions if d.type == type]
+
+
+class DisruptionParams(QueryParams):
+    isActive: bool

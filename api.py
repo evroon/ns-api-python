@@ -14,7 +14,7 @@ from models.departures import (
     Departure,
     DelayInfo,
 )
-from models.disruptions import DisruptionResponseModel
+from models.disruptions import DisruptionResponseModel, DisruptionParams
 from models.errors import StationNotFoundException, NSApiException
 from models.stations import StationResponseModel, Station
 
@@ -97,6 +97,7 @@ class NSApi:
             "v3/disruptions",
             response_model=DisruptionResponseModel,
             root_key="disruptions",
+            params=DisruptionParams(isActive=True),
         )
         assert isinstance(response, DisruptionResponseModel)
         return response
