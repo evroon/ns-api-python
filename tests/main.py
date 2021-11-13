@@ -19,7 +19,7 @@ def test_station_name_resolve() -> None:
 
 
 def test_delay() -> None:
-    route_delays = api.get_delay_info("UT", "AMS")
+    route_delays = api.get_delay_info("UT", "ASD")
     assert len(route_delays) > 0
 
 

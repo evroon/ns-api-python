@@ -134,6 +134,7 @@ class NSApi:
 
         if destination_name is not None:
             destination = self.resolve_station_name(destination_name)
+            assert destination is not None
 
         for x in departures:
             assert isinstance(x, Departure)
