@@ -12,4 +12,4 @@ class NSApiException(Exception):
     message: str
 
     def __str__(self) -> str:
-        return f'{self.statusCode} - {self.message}'
+        return f"{self.statusCode} - {self.message}"

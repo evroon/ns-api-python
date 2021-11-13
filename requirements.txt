@@ -5,3 +5,4 @@ click
 python-dotenv
 types-requests
 pytest
+black
