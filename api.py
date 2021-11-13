@@ -2,7 +2,7 @@ import os
 from typing import Type, Optional, List
 
 import requests
-from dotenv import dotenv_values
+from dotenv import load_dotenv
 from pydantic import BaseModel
 
 from models.departures import DepartureParams, QueryParams, ResponseModel, DepartureResponseModel, \
@@ -10,7 +10,7 @@ from models.departures import DepartureParams, QueryParams, ResponseModel, Depar
 from models.errors import StationNotFoundException
 from models.stations import StationResponseModel, Station
 
-config = dotenv_values(".env")
+load_dotenv()
 
 
 class NSApi:
@@ -18,7 +18,7 @@ class NSApi:
     station_info_path = f'{data_dir}/stations.json'
     base_url = 'https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/'
     headers = {
-        'Ocp-Apim-Subscription-Key': config['API_KEY'],
+        'Ocp-Apim-Subscription-Key': os.environ['API_KEY'],
     }
 
     @staticmethod
