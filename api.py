@@ -25,7 +25,7 @@ class NSApi:
     def create_dir(dir: str) -> None:
         if not os.path.exists(dir):
             os.makedirs(dir)
-:
+
     def send_request(self, endpoint: str, params: QueryParams = QueryParams(),
                      response_model: Type[ResponseModel] = ResponseModel) -> ResponseModel:
         response = requests.get(
