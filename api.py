@@ -137,7 +137,7 @@ class NSApi:
 
         for x in departures:
             assert isinstance(x, Departure)
-            if destination is None or x.direction == destination.names.long:
+            if destination_name is None or x.direction == destination.names.long:
                 assert x.delay is not None
                 result.append(x.delay)
 
