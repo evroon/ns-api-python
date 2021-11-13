@@ -127,7 +127,7 @@ class NSApi:
         return response.payload
 
     def get_delay_info(
-        self, origin_name: str, destination_name: Optional[str]
+        self, origin_name: str, destination_name: Optional[str] = None
     ) -> List[DelayInfo]:
         departures = self.get_departure_info(origin_name).departures
         result = []
