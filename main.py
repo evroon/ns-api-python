@@ -1,6 +1,7 @@
 import click
 
 from api import NSApi
+from models.disruptions import DisruptionType
 
 
 @click.group()
@@ -23,7 +24,23 @@ def main(station: str) -> None:
 def stations() -> None:
     """Fetches stations from the NS API"""
     api = NSApi()
-    api.get_stations()
+    stations_data = api.get_stations().stations
+    print(f"Received {len(stations_data)} stations")
+
+
+@click.command()
+def disruptions() -> None:
+    """Fetches stations from the NS API"""
+    api = NSApi()
+    data = api.get_disruptions()
+
+    maintenance_count = len(data.get_disruption_by_type(DisruptionType.MAINTENANCE))
+    disruption_count = len(data.get_disruption_by_type(DisruptionType.DISRUPTION))
+    calamity_count = len(data.get_disruption_by_type(DisruptionType.CALAMITY))
+
+    print(f"Found {maintenance_count} maintenances")
+    print(f"Found {disruption_count} disruptions")
+    print(f"Found {calamity_count} calamities")
 
 
 @click.command()
@@ -52,5 +69,6 @@ def delay(origin: str, destination: str, short: bool) -> None:
 if __name__ == "__main__":
     cli.add_command(main)
     cli.add_command(delay)
+    cli.add_command(disruptions)
     cli.add_command(stations)
     cli()

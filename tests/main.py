@@ -1,6 +1,7 @@
 import os.path
 
 from api import NSApi
+from models.disruptions import DisruptionType
 
 api = NSApi()
 
@@ -20,3 +21,20 @@ def test_station_name_resolve() -> None:
 def test_delay() -> None:
     route_delays = api.get_delay_info("UT", "AMS")
     assert len(route_delays) > 0
+
+
+def test_disruptions() -> None:
+    disruptions = api.get_disruptions()
+    assert len(disruptions.disruptions) > 0
+
+    maintenance_count = len(
+        disruptions.get_disruption_by_type(DisruptionType.MAINTENANCE)
+    )
+    disruption_count = len(
+        disruptions.get_disruption_by_type(DisruptionType.DISRUPTION)
+    )
+    calamity_count = len(disruptions.get_disruption_by_type(DisruptionType.CALAMITY))
+
+    assert maintenance_count + disruption_count + calamity_count == len(
+        disruptions.disruptions
+    )
