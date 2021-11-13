@@ -130,7 +130,7 @@ class NSApi:
         self, origin_name: str, destination_name: Optional[str] = None
     ) -> List[DelayInfo]:
         departures = self.get_departure_info(origin_name).departures
-        result = []
+        result: List[DelayInfo] = []
         destination = None
 
         if destination_name is not None:
@@ -145,6 +145,18 @@ class NSApi:
             assert isinstance(departure, Departure)
             if destination_name is None or is_match(departure):
                 assert departure.delay is not None
-                result.append(departure.delay)
+                already_in_result = False
+
+                # Check if the same route already exists in the result list; if so: skip it.
+                for x in result:
+                    if (
+                        x.origin == departure.delay.origin
+                        and x.destination == departure.delay.destination
+                    ):
+                        already_in_result = True
+                        break
+
+                if not already_in_result:
+                    result.append(departure.delay)
 
         return result
