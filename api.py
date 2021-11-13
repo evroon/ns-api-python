@@ -14,6 +14,7 @@ from models.departures import (
     Departure,
     DelayInfo,
 )
+from models.disruptions import DisruptionResponseModel
 from models.errors import StationNotFoundException, NSApiException
 from models.stations import StationResponseModel, Station
 
@@ -23,7 +24,7 @@ load_dotenv()
 class NSApi:
     data_dir = "data"
     station_info_path = f"{data_dir}/stations.json"
-    base_url = "https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/"
+    base_url = "https://gateway.apiportal.ns.nl/reisinformatie-api/api/"
 
     @staticmethod
     def create_dir(dir: str) -> None:
@@ -35,6 +36,7 @@ class NSApi:
         endpoint: str,
         params: QueryParams = QueryParams(),
         response_model: Type[ResponseModel] = ResponseModel,
+        root_key: Optional[str] = None,
     ) -> ResponseModel:
         api_key = os.environ["API_KEY"]
         assert len(api_key) == 32
@@ -46,6 +48,8 @@ class NSApi:
             self.base_url + endpoint, headers=headers, params=params
         )
         response_json = response.json()
+        if root_key is not None:
+            response_json = {root_key: response_json}
 
         try:
             result = response_model(**response_json)
@@ -82,10 +86,19 @@ class NSApi:
         return None
 
     def get_stations(self) -> StationResponseModel:
-        response = self.send_request("stations", response_model=StationResponseModel)
+        response = self.send_request("v2/stations", response_model=StationResponseModel)
         assert isinstance(response, StationResponseModel)
 
         self.save_json(self.station_info_path, response)
+        return response
+
+    def get_disruptions(self) -> DisruptionResponseModel:
+        response = self.send_request(
+            "v3/disruptions",
+            response_model=DisruptionResponseModel,
+            root_key="disruptions",
+        )
+        assert isinstance(response, DisruptionResponseModel)
         return response
 
     def get_departure_info(self, station_name: str) -> DeparturePayloadModel:
@@ -94,7 +107,7 @@ class NSApi:
             raise StationNotFoundException(station_name=station_name)
 
         response = self.send_request(
-            "departures",
+            "v2/departures",
             DepartureParams(station=station.code),
             response_model=DepartureResponseModel,
         )
