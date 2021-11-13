@@ -17,9 +17,6 @@ class NSApi:
     data_dir = 'data'
     station_info_path = f'{data_dir}/stations.json'
     base_url = 'https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/'
-    headers = {
-        'Ocp-Apim-Subscription-Key': os.environ['API_KEY'],
-    }
 
     @staticmethod
     def create_dir(dir: str) -> None:
@@ -28,9 +25,15 @@ class NSApi:
 
     def send_request(self, endpoint: str, params: QueryParams = QueryParams(),
                      response_model: Type[ResponseModel] = ResponseModel) -> ResponseModel:
+        api_key = os.environ['API_KEY']
+        assert len(api_key) == 32
+        headers = {
+            'Ocp-Apim-Subscription-Key': api_key,
+        }
+
         response = requests.get(
             self.base_url + endpoint,
-            headers=self.headers,
+            headers=headers,
             params=params
         )
         response_json = response.json()
