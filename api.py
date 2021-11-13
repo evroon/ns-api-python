@@ -2,24 +2,21 @@ import os
 from typing import Type, Optional, List
 
 import requests
-from dotenv import dotenv_values
-from pydantic import BaseModel
+from dotenv import load_dotenv
+from pydantic import BaseModel, ValidationError
 
 from models.departures import DepartureParams, QueryParams, ResponseModel, DepartureResponseModel, \
     DeparturePayloadModel, Departure, DelayInfo
-from models.errors import StationNotFoundException
+from models.errors import StationNotFoundException, NSApiException
 from models.stations import StationResponseModel, Station
 
-config = dotenv_values(".env")
+load_dotenv()
 
 
 class NSApi:
     data_dir = 'data'
     station_info_path = f'{data_dir}/stations.json'
     base_url = 'https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/'
-    headers = {
-        'Ocp-Apim-Subscription-Key': config['API_KEY'],
-    }
 
     @staticmethod
     def create_dir(dir: str) -> None:
@@ -28,13 +25,25 @@ class NSApi:
 
     def send_request(self, endpoint: str, params: QueryParams = QueryParams(),
                      response_model: Type[ResponseModel] = ResponseModel) -> ResponseModel:
+        api_key = os.environ['API_KEY']
+        assert len(api_key) == 32
+        headers = {
+            'Ocp-Apim-Subscription-Key': api_key,
+        }
+
         response = requests.get(
             self.base_url + endpoint,
-            headers=self.headers,
+            headers=headers,
             params=params
         )
         response_json = response.json()
-        return response_model(**response_json)
+
+        try:
+            result = response_model(**response_json)
+        except ValidationError:
+            raise NSApiException(**response_json)
+
+        return result
 
     @staticmethod
     def get_json(model: BaseModel) -> str:
@@ -61,11 +70,12 @@ class NSApi:
         print(f'Could not find station: {name}')
         return None
 
-    def get_stations(self) -> None:
+    def get_stations(self) -> StationResponseModel:
         response = self.send_request('stations', response_model=StationResponseModel)
         assert isinstance(response, StationResponseModel)
 
         self.save_json(self.station_info_path, response)
+        return response
 
     def get_departure_info(self, station_name: str) -> DeparturePayloadModel:
         station = self.resolve_station_name(station_name)
