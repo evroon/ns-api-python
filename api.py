@@ -131,15 +131,20 @@ class NSApi:
     ) -> List[DelayInfo]:
         departures = self.get_departure_info(origin_name).departures
         result = []
+        destination = None
 
         if destination_name is not None:
             destination = self.resolve_station_name(destination_name)
             assert destination is not None
 
-        for x in departures:
-            assert isinstance(x, Departure)
-            if destination_name is None or x.direction == destination.names.long:
-                assert x.delay is not None
-                result.append(x.delay)
+        def is_match(dep: Departure) -> bool:
+            assert destination is not None
+            return dep.direction == destination.names.long
+
+        for departure in departures:
+            assert isinstance(departure, Departure)
+            if destination_name is None or is_match(departure):
+                assert departure.delay is not None
+                result.append(departure.delay)
 
         return result
