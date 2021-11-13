@@ -2,6 +2,7 @@
 
 
 [![mypy](https://github.com/evroon/ns-api-python/actions/workflows/mypy.yml/badge.svg)](https://github.com/evroon/ns-api-python/actions/workflows/mypy.yml)
+[![pytest](https://github.com/evroon/ns-api-python/actions/workflows/pytest.yml/badge.svg)](https://github.com/evroon/ns-api-python/actions/workflows/pytest.yml)
 
 This project serves as a simple Python client of the [NS API](https://apiportal.ns.nl).
 The reponses are stored in Pydantic models, enabling easy manipulation and validation of the data.
