@@ -3,11 +3,11 @@ from typing import Type, Optional, List
 
 import requests
 from dotenv import load_dotenv
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from models.departures import DepartureParams, QueryParams, ResponseModel, DepartureResponseModel, \
     DeparturePayloadModel, Departure, DelayInfo
-from models.errors import StationNotFoundException
+from models.errors import StationNotFoundException, NSApiException
 from models.stations import StationResponseModel, Station
 
 load_dotenv()
@@ -34,7 +34,13 @@ class NSApi:
             params=params
         )
         response_json = response.json()
-        return response_model(**response_json)
+
+        try:
+            result = response_model(**response_json)
+        except ValidationError:
+            raise NSApiException(**response_json)
+
+        return result
 
     @staticmethod
     def get_json(model: BaseModel) -> str:
