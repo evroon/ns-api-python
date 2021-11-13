@@ -9,7 +9,9 @@ def cli() -> None:
 
 
 @click.command()
-@click.option('--station', default='UT', help='Station to get departure information of.')
+@click.option(
+    "--station", default="UT", help="Station to get departure information of."
+)
 def main(station: str) -> None:
     """Returns route information from the NS API"""
     api = NSApi()
@@ -25,10 +27,15 @@ def stations() -> None:
 
 
 @click.command()
-@click.option('--origin', default='UT', help='Origin of route to get delay of.')
-@click.option('--destination', default='LEDN', help='Destination of route to get delay of.')
-@click.option('--short/--long', default=False,
-              help='Short format only returns delay (in seconds) for the next departure.')
+@click.option("--origin", default="UT", help="Origin of route to get delay of.")
+@click.option(
+    "--destination", default="LEDN", help="Destination of route to get delay of."
+)
+@click.option(
+    "--short/--long",
+    default=False,
+    help="Short format only returns delay (in seconds) for the next departure.",
+)
 def delay(origin: str, destination: str, short: bool) -> None:
     """Returns route delay from the NS API"""
     api = NSApi()
@@ -42,7 +49,7 @@ def delay(origin: str, destination: str, short: bool) -> None:
         print(route_delay)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli.add_command(main)
     cli.add_command(delay)
     cli.add_command(stations)

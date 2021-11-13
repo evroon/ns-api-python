@@ -6,13 +6,12 @@ from models.base import ResponseModel
 
 
 class StationNames(BaseModel):
-    long: str = Field(alias='lang')
-    medium: str = Field(alias='middel')
-    short: str = Field(alias='kort')
+    long: str = Field(alias="lang")
+    medium: str = Field(alias="middel")
+    short: str = Field(alias="kort")
 
     def get_names(self) -> List[str]:
         return [self.long, self.medium, self.short]
-
 
     class Config:
         allow_population_by_field_name = True
@@ -26,7 +25,7 @@ class Station(BaseModel):
     land: str
     lat: float
     lng: float
-    names: StationNames = Field(alias='namen')
+    names: StationNames = Field(alias="namen")
     ingangsDatum: str
     heeftFaciliteiten: bool
     heeftVertrektijden: bool
@@ -40,7 +39,7 @@ class Station(BaseModel):
 
 
 class StationResponseModel(ResponseModel):
-    stations: List[Station] = Field(alias='payload')
+    stations: List[Station] = Field(alias="payload")
 
     class Config:
         allow_population_by_field_name = True

@@ -5,8 +5,15 @@ import requests
 from dotenv import load_dotenv
 from pydantic import BaseModel, ValidationError
 
-from models.departures import DepartureParams, QueryParams, ResponseModel, DepartureResponseModel, \
-    DeparturePayloadModel, Departure, DelayInfo
+from models.departures import (
+    DepartureParams,
+    QueryParams,
+    ResponseModel,
+    DepartureResponseModel,
+    DeparturePayloadModel,
+    Departure,
+    DelayInfo,
+)
 from models.errors import StationNotFoundException, NSApiException
 from models.stations import StationResponseModel, Station
 
@@ -14,27 +21,29 @@ load_dotenv()
 
 
 class NSApi:
-    data_dir = 'data'
-    station_info_path = f'{data_dir}/stations.json'
-    base_url = 'https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/'
+    data_dir = "data"
+    station_info_path = f"{data_dir}/stations.json"
+    base_url = "https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/"
 
     @staticmethod
     def create_dir(dir: str) -> None:
         if not os.path.exists(dir):
             os.makedirs(dir)
 
-    def send_request(self, endpoint: str, params: QueryParams = QueryParams(),
-                     response_model: Type[ResponseModel] = ResponseModel) -> ResponseModel:
-        api_key = os.environ['API_KEY']
+    def send_request(
+        self,
+        endpoint: str,
+        params: QueryParams = QueryParams(),
+        response_model: Type[ResponseModel] = ResponseModel,
+    ) -> ResponseModel:
+        api_key = os.environ["API_KEY"]
         assert len(api_key) == 32
         headers = {
-            'Ocp-Apim-Subscription-Key': api_key,
+            "Ocp-Apim-Subscription-Key": api_key,
         }
 
         response = requests.get(
-            self.base_url + endpoint,
-            headers=headers,
-            params=params
+            self.base_url + endpoint, headers=headers, params=params
         )
         response_json = response.json()
 
@@ -52,7 +61,7 @@ class NSApi:
     def save_json(self, out_path: str, model: BaseModel) -> None:
         self.create_dir(os.path.dirname(out_path))
 
-        with open(out_path, 'w') as f:
+        with open(out_path, "w") as f:
             f.write(self.get_json(model))
 
     def has_station_info(self) -> bool:
@@ -62,16 +71,18 @@ class NSApi:
         if not self.has_station_info():
             return None
 
-        payload = StationResponseModel.parse_file(self.station_info_path, )
+        payload = StationResponseModel.parse_file(
+            self.station_info_path,
+        )
         for station in payload.stations:
             if station.has_name(name):
                 return station
 
-        print(f'Could not find station: {name}')
+        print(f"Could not find station: {name}")
         return None
 
     def get_stations(self) -> StationResponseModel:
-        response = self.send_request('stations', response_model=StationResponseModel)
+        response = self.send_request("stations", response_model=StationResponseModel)
         assert isinstance(response, StationResponseModel)
 
         self.save_json(self.station_info_path, response)
@@ -83,9 +94,9 @@ class NSApi:
             raise StationNotFoundException(station_name=station_name)
 
         response = self.send_request(
-            'departures',
+            "departures",
             DepartureParams(station=station.code),
-            response_model=DepartureResponseModel
+            response_model=DepartureResponseModel,
         )
 
         assert isinstance(response, DepartureResponseModel)
@@ -102,7 +113,9 @@ class NSApi:
 
         return response.payload
 
-    def get_delay_info(self, origin_name: str, destination_name: Optional[str]) -> List[DelayInfo]:
+    def get_delay_info(
+        self, origin_name: str, destination_name: Optional[str]
+    ) -> List[DelayInfo]:
         departures = self.get_departure_info(origin_name).departures
         result = []
 
