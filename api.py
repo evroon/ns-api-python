@@ -61,11 +61,12 @@ class NSApi:
         print(f'Could not find station: {name}')
         return None
 
-    def get_stations(self) -> None:
+    def get_stations(self) -> StationResponseModel:
         response = self.send_request('stations', response_model=StationResponseModel)
         assert isinstance(response, StationResponseModel)
 
         self.save_json(self.station_info_path, response)
+        return response
 
     def get_departure_info(self, station_name: str) -> DeparturePayloadModel:
         station = self.resolve_station_name(station_name)
