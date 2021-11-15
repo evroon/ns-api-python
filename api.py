@@ -54,7 +54,7 @@ class NSApi:
         try:
             result = response_model(**response_json)
         except ValidationError as e:
-            if 'statusCode' in response_json:
+            if "statusCode" in response_json:
                 raise NSApiException(**response_json)
             else:
                 raise e
