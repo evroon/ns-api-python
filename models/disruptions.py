@@ -19,11 +19,11 @@ class Disruption(BaseModel):
     title: str
     topic: Optional[str]
     isActive: str
-    registrationTime: datetime
-    releaseTime: datetime
-    start: datetime
-    end: datetime
-    period: str
+    registrationTime: Optional[datetime]
+    releaseTime: Optional[datetime]
+    start: Optional[datetime]
+    end: Optional[datetime]
+    period: Optional[str]
 
 
 class DisruptionResponseModel(ResponseModel):
