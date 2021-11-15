@@ -17,8 +17,8 @@ class Disruption(BaseModel):
     id: str
     type: DisruptionType
     title: str
-    topic: Optional[str]
     isActive: str
+    topic: Optional[str]
     registrationTime: Optional[datetime]
     releaseTime: Optional[datetime]
     start: Optional[datetime]
