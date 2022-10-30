@@ -27,7 +27,7 @@ class Departure(BaseModel):
     plannedTimeZoneOffset: int
     actualDateTime: datetime
     actualTimeZoneOffset: int
-    plannedTrack: str
+    plannedTrack: str | None
     trainCategory: str
     cancelled: bool
     departureStatus: str
