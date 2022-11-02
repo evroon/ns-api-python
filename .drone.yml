@@ -1,0 +1,10 @@
+kind: pipeline
+name: default
+
+steps:
+- name: black
+  image: python
+  commands:
+  - pip install -r requirements.txt
+  - black .
+
